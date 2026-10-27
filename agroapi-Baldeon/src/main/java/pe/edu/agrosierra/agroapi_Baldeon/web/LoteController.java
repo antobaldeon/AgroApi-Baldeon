@@ -2,6 +2,7 @@ package pe.edu.agrosierra.agroapi_Baldeon.web;
 
 import pe.edu.agrosierra.agroapi_Baldeon.dominio.Lote;
 import pe.edu.agrosierra.agroapi_Baldeon.servicio.LoteService;
+import pe.edu.agrosierra.agroapi_Baldeon.servicio.CampaniaService;
 import pe.edu.agrosierra.agroapi_Baldeon.seguridad.UsuarioActualService;
 import pe.edu.agrosierra.agroapi_Baldeon.web.dto.LoteResponse;
 import pe.edu.agrosierra.agroapi_Baldeon.web.dto.PaginaResponse;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,10 +23,13 @@ public class LoteController {
 
     private final LoteService loteService;
     private final UsuarioActualService usuarioActualService;
+    private final CampaniaService campaniaService;
 
-    public LoteController(LoteService loteService, UsuarioActualService usuarioActualService) {
+    public LoteController(LoteService loteService, UsuarioActualService usuarioActualService,
+                          CampaniaService campaniaService) {
         this.loteService = loteService;
         this.usuarioActualService = usuarioActualService;
+        this.campaniaService = campaniaService;
     }
 
     @GetMapping("/lotes")
@@ -45,5 +50,10 @@ public class LoteController {
     @GetMapping("/usuarios/me")
     public ResponseEntity<UsuarioActualResponse> usuarioActual(Authentication authentication) {
         return ResponseEntity.ok(usuarioActualService.obtener(authentication.getName()));
+    }
+
+    @PostMapping("/lotes/{id}/cerrar-campania")
+    public LoteResponse cerrarCampania(@PathVariable Long id) {
+        return LoteResponse.desde(campaniaService.cerrar(id));
     }
 }
