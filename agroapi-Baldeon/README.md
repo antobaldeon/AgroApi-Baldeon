@@ -45,7 +45,7 @@ La aplicación toma la conexión desde `DB_URL`, `DB_USERNAME` y `DB_PASSWORD`. 
 Al iniciar, Flyway aplica las migraciones de `src/main/resources/db/migration`. Hibernate valida el esquema y no lo modifica automáticamente.
 JWT usa firma HS256 y requiere que `JWT_SECRET` tenga al menos 32 bytes. En producción debe configurarse con un secreto aleatorio y mantenerse fuera del repositorio.
 
-Si ya tienes MySQL instalado, crea la base ejecutando `scripts/crear_base.sql`, configura las mismas tres variables de entorno con tu usuario y contraseña, y ejecuta el comando de Maven anterior.
+Si ya tienes MySQL instalado, crea la base ejecutando `scripts/crear_base.sql`, configura `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` y `JWT_SECRET`, y ejecuta el comando de Maven anterior.
 
 ## Organización del código
 
@@ -63,7 +63,7 @@ Los controladores deben delegar las reglas de negocio a `servicio`; la autorizac
 
 ## Modelo y esquema inicial
 
-Las entidades JPA `Usuario`, `Rol`, `Privilegio`, `Lote` y `Labor`, además de `TipoLabor`, están en el paquete `dominio`. El esquema Flyway `V1__create_initial_schema.sql` crea las tablas y relaciones correspondientes. Al iniciar la API, `DatosSemilla` carga de forma idempotente los usuarios, roles, privilegios, ocho lotes y veinte labores de demostración.
+Las entidades JPA `Usuario`, `Rol`, `Privilegio`, `Lote` y `Labor`, además de `TipoLabor`, están en el paquete `dominio`. El esquema Flyway `V1__create_initial_schema.sql` crea las tablas y relaciones, y `V2__add_labor_registration_timestamp.sql` agrega la hora de registro necesaria para RN-02. Al iniciar la API, `DatosSemilla` carga de forma idempotente los usuarios, roles, privilegios, ocho lotes y veinte labores de demostración.
 
 Usuarios de prueba (contraseña común: `Agro2026*`):
 
@@ -96,6 +96,10 @@ Las rutas protegidas responden `401` si falta o no es válido el token, y `403` 
 El padrón se consulta con `GET /api/v1/lotes?pagina=0&tamanio=20&valle=Valle%20Alto&campaniaCerrada=false`; ambos filtros son opcionales. La ficha de un lote se obtiene con `GET /api/v1/lotes/{id}` y el perfil autenticado con `GET /api/v1/usuarios/me`.
 
 Las labores se consultan por lote en `GET /api/v1/lotes/{id}/labores`, se registran en `POST /api/v1/labores`, se corrigen en `PUT /api/v1/labores/{id}` y se eliminan en `DELETE /api/v1/labores/{id}`. Las consultas aceptan `pagina` y `tamanio`; se ordenan por fecha descendente. El registro responde `201 Created` y la eliminación `204 No Content` sin cuerpo.
+
+`POST /api/v1/lotes/{id}/cerrar-campania` cierra el lote cuando tiene al menos una labor de cosecha. El servicio también impide registrar o corregir labores con la campaña cerrada y valida la dosis máxima de fumigación contra hectáreas por lote.
+
+El privilegio `LABOR_EDITAR_TODAS` define el alcance global de edición. Quien solo posee `LABOR_EDITAR` puede modificar únicamente sus propias labores durante las 24 horas siguientes a su registro; este alcance también se representa como privilegio, no con comparaciones por nombre de rol.
 
 ## Versionado de la API
 
