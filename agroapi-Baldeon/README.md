@@ -79,6 +79,20 @@ La contraseña se guarda con BCrypt. Los lotes incluyen dos campañas cerradas; 
 
 `POST /api/v1/auth/login` recibe un JSON con `usuario` y `contrasena`. Devuelve el JWT, el usuario, su nombre, roles, privilegios y vigencia en segundos. El token dura una hora y las demás rutas requieren `Authorization: Bearer <token>`.
 
+La autorización se configura por privilegio, nunca por nombre del rol. El filtro de seguridad toma la lista `privilegios` del JWT y la convierte en autoridades Spring; las rutas quedan asociadas a estos códigos:
+
+| Operación | Privilegio |
+| --- | --- |
+| Consultar lotes | `LOTE_LEER` |
+| Consultar labores | `LABOR_LEER` |
+| Registrar labor | `LABOR_CREAR` |
+| Corregir labor | `LABOR_EDITAR` |
+| Eliminar labor | `LABOR_ELIMINAR` |
+| Cerrar campaña | `CAMPANIA_CERRAR` |
+| Gestionar usuarios | `USUARIO_GESTIONAR` |
+
+Las rutas protegidas responden `401` si falta o no es válido el token, y `403` si el usuario no tiene el privilegio. Ambos errores usan el formato común del API. Los servicios pueden complementar esta protección con reglas de propiedad y de negocio.
+
 ## Versionado de la API
 
 Las rutas del servicio se implementarán bajo `/api/v1` conforme al contrato del examen.
