@@ -68,6 +68,13 @@ public class Labor {
         }
     }
 
+    public void corregir(TipoLabor tipo, LocalDate fecha, BigDecimal cantidad, String observacion) {
+        this.tipo = tipo;
+        this.fecha = fecha;
+        this.cantidad = cantidad;
+        this.observacion = observacion;
+    }
+
     public Long getId() {
         return id;
     }
