@@ -93,6 +93,8 @@ La autorización se configura por privilegio, nunca por nombre del rol. El filtr
 
 Las rutas protegidas responden `401` si falta o no es válido el token, y `403` si el usuario no tiene el privilegio. Ambos errores usan el formato común del API. Los servicios pueden complementar esta protección con reglas de propiedad y de negocio.
 
+El padrón se consulta con `GET /api/v1/lotes?pagina=0&tamanio=20&valle=Valle%20Alto&campaniaCerrada=false`; ambos filtros son opcionales. La ficha de un lote se obtiene con `GET /api/v1/lotes/{id}` y el perfil autenticado con `GET /api/v1/usuarios/me`.
+
 ## Versionado de la API
 
 Las rutas del servicio se implementarán bajo `/api/v1` conforme al contrato del examen.

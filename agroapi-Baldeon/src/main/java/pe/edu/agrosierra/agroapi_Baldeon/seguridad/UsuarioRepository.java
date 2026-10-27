@@ -10,4 +10,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @EntityGraph(attributePaths = {"roles", "roles.privilegios"})
     Optional<Usuario> findByUsername(String username);
+
+    @EntityGraph(attributePaths = {"roles", "roles.privilegios"})
+    Optional<Usuario> findWithRolesAndPrivilegesById(Long id);
 }
