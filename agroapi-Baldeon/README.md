@@ -38,10 +38,12 @@ La aplicación toma la conexión desde `DB_URL`, `DB_USERNAME` y `DB_PASSWORD`. 
    $env:DB_URL = "jdbc:mysql://localhost:3306/agrosierra?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
    $env:DB_USERNAME = "agrosierra_app"
    $env:DB_PASSWORD = "cambia_esta_clave_local"
+   $env:JWT_SECRET = "cambia_por_una_clave_secreta_de_al_menos_32_caracteres"
    ./mvnw.cmd spring-boot:run
    ```
 
 Al iniciar, Flyway aplica las migraciones de `src/main/resources/db/migration`. Hibernate valida el esquema y no lo modifica automáticamente.
+JWT usa firma HS256 y requiere que `JWT_SECRET` tenga al menos 32 bytes. En producción debe configurarse con un secreto aleatorio y mantenerse fuera del repositorio.
 
 Si ya tienes MySQL instalado, crea la base ejecutando `scripts/crear_base.sql`, configura las mismas tres variables de entorno con tu usuario y contraseña, y ejecuta el comando de Maven anterior.
 
@@ -72,6 +74,10 @@ Usuarios de prueba (contraseña común: `Agro2026*`):
 | `admin` | `ADMINISTRADOR` |
 
 La contraseña se guarda con BCrypt. Los lotes incluyen dos campañas cerradas; entre los lotes abiertos hay casos con cosecha y sin cosecha para demostrar RN-03.
+
+## Autenticación
+
+`POST /api/v1/auth/login` recibe un JSON con `usuario` y `contrasena`. Devuelve el JWT, el usuario, su nombre, roles, privilegios y vigencia en segundos. El token dura una hora y las demás rutas requieren `Authorization: Bearer <token>`.
 
 ## Versionado de la API
 
