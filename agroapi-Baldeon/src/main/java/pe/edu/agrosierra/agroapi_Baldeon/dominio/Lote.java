@@ -70,6 +70,10 @@ public class Lote {
         labores.add(labor);
     }
 
+    public void cerrarCampania() {
+        this.campaniaCerrada = true;
+    }
+
     public Long getId() {
         return id;
     }

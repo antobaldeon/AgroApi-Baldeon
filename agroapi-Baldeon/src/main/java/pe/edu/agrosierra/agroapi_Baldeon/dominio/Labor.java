@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
@@ -48,6 +49,9 @@ public class Labor {
     @Column(name = "observacion", nullable = false, columnDefinition = "TEXT")
     private String observacion;
 
+    @Column(name = "registrado_en", nullable = false, updatable = false)
+    private Instant registradoEn;
+
     protected Labor() {
         // Constructor requerido por JPA.
     }
@@ -60,6 +64,7 @@ public class Labor {
         this.responsable = responsable;
         this.cantidad = cantidad;
         this.observacion = observacion;
+        this.registradoEn = Instant.now();
         if (lote != null) {
             lote.registrarLabor(this);
         }
@@ -73,6 +78,10 @@ public class Labor {
         this.fecha = fecha;
         this.cantidad = cantidad;
         this.observacion = observacion;
+    }
+
+    public Instant getRegistradoEn() {
+        return registradoEn;
     }
 
     public Long getId() {

@@ -69,7 +69,8 @@ public class DatosSemilla implements ApplicationRunner {
                 (4, 'LABOR_EDITAR', 'Corregir labores según las reglas del sistema'),
                 (5, 'LABOR_ELIMINAR', 'Eliminar una labor'),
                 (6, 'CAMPANIA_CERRAR', 'Cerrar la campaña de un lote'),
-                (7, 'USUARIO_GESTIONAR', 'Crear usuarios y asignar roles')
+                (7, 'USUARIO_GESTIONAR', 'Crear usuarios y asignar roles'),
+                (8, 'LABOR_EDITAR_TODAS', 'Corregir cualquier labor sin restricción de autoría')
                 """);
     }
 
@@ -84,7 +85,7 @@ public class DatosSemilla implements ApplicationRunner {
         jdbcTemplate.update("""
                 INSERT IGNORE INTO rol_privilegio (rol_id, privilegio_id) VALUES
                 (1, 1), (1, 2), (1, 3), (1, 4),
-                (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6),
+                (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 8),
                 (3, 1), (3, 2), (3, 7)
                 """);
     }
