@@ -61,7 +61,17 @@ Los controladores deben delegar las reglas de negocio a `servicio`; la autorizac
 
 ## Modelo y esquema inicial
 
-Las entidades JPA `Usuario`, `Rol`, `Privilegio`, `Lote` y `Labor`, además de `TipoLabor`, están en el paquete `dominio`. El esquema Flyway `V1__create_initial_schema.sql` crea las tablas y relaciones correspondientes. Los datos semilla se agregarán en una etapa posterior.
+Las entidades JPA `Usuario`, `Rol`, `Privilegio`, `Lote` y `Labor`, además de `TipoLabor`, están en el paquete `dominio`. El esquema Flyway `V1__create_initial_schema.sql` crea las tablas y relaciones correspondientes. Al iniciar la API, `DatosSemilla` carga de forma idempotente los usuarios, roles, privilegios, ocho lotes y veinte labores de demostración.
+
+Usuarios de prueba (contraseña común: `Agro2026*`):
+
+| Usuario | Rol |
+| --- | --- |
+| `tecnico1` | `TECNICO` |
+| `jefe1` | `JEFE_CAMPO` |
+| `admin` | `ADMINISTRADOR` |
+
+La contraseña se guarda con BCrypt. Los lotes incluyen dos campañas cerradas; entre los lotes abiertos hay casos con cosecha y sin cosecha para demostrar RN-03.
 
 ## Versionado de la API
 
