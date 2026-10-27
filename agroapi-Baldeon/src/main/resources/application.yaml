@@ -13,3 +13,8 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+agrosierra:
+  security:
+    jwt:
+      issuer: agrosierra-api
+      secret: ${JWT_SECRET:}
