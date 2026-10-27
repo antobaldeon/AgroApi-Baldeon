@@ -8,7 +8,9 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -19,6 +21,7 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import pe.edu.agrosierra.agroapi_Baldeon.seguridad.CodigosPrivilegio;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -26,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 
 @Configuration
+@EnableMethodSecurity
 public class JwtSecurityConfig {
 
     private final byte[] secretBytes;
@@ -80,7 +84,8 @@ public class JwtSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter) throws Exception {
+            Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter,
+            ApiSecurityErrorHandler apiSecurityErrorHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -88,8 +93,29 @@ public class JwtSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/lotes/*/labores", "/api/v1/lotes/*/labores/**")
+                        .hasAuthority(CodigosPrivilegio.LABOR_LEER)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/lotes", "/api/v1/lotes/**")
+                        .hasAuthority(CodigosPrivilegio.LOTE_LEER)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/labores")
+                        .hasAuthority(CodigosPrivilegio.LABOR_CREAR)
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/labores/*", "/api/v1/labores/**")
+                        .hasAuthority(CodigosPrivilegio.LABOR_EDITAR)
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/labores/*", "/api/v1/labores/**")
+                        .hasAuthority(CodigosPrivilegio.LABOR_ELIMINAR)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/lotes/*/cerrar-campania")
+                        .hasAuthority(CodigosPrivilegio.CAMPANIA_CERRAR)
+                        .requestMatchers("/api/v1/usuarios/me").authenticated()
+                        .requestMatchers("/api/v1/usuarios/**")
+                        .hasAuthority(CodigosPrivilegio.USUARIO_GESTIONAR)
                         .anyRequest().authenticated())
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(apiSecurityErrorHandler)
+                        .accessDeniedHandler(apiSecurityErrorHandler))
                 .oauth2ResourceServer(resourceServer -> resourceServer
+                        .authenticationEntryPoint(apiSecurityErrorHandler)
+                        .accessDeniedHandler(apiSecurityErrorHandler)
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
                 .build();
     }

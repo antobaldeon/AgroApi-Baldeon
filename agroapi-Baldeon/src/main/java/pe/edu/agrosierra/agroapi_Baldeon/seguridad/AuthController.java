@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pe.edu.agrosierra.agroapi_Baldeon.web.dto.ApiErrorResponse;
 
+import java.time.Instant;
+import java.util.Map;
 import java.util.List;
 
 @RestController
@@ -32,9 +35,11 @@ public class AuthController {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorLogin> credencialesInvalidas(BadCredentialsException exception) {
+    public ResponseEntity<ApiErrorResponse> credencialesInvalidas(
+            BadCredentialsException exception, jakarta.servlet.http.HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorLogin(401, "Usuario o contraseña incorrectos"));
+                .body(new ApiErrorResponse(Instant.now().toString(), 401, "Unauthorized",
+                        "Usuario o contraseña incorrectos", request.getRequestURI(), Map.of()));
     }
 
     public record LoginRequest(@NotBlank String usuario, @NotBlank String contrasena) {
@@ -42,8 +47,5 @@ public class AuthController {
 
     public record LoginResponse(String token, String usuario, String nombre,
                                 List<String> roles, List<String> privilegios, long expiraEnSegundos) {
-    }
-
-    public record ErrorLogin(int status, String message) {
     }
 }
