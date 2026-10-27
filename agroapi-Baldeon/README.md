@@ -59,9 +59,9 @@ El código de la API se organiza por responsabilidad dentro de `src/main/java/pe
 
 Los controladores deben delegar las reglas de negocio a `servicio`; la autorización se implementará en el backend.
 
-## Esquema inicial
+## Modelo y esquema inicial
 
-La migración `V1__create_initial_schema.sql` crea las tablas de usuarios, roles, privilegios, lotes y labores, junto con sus relaciones e índices. Los datos semilla se agregarán en una etapa posterior.
+Las entidades JPA `Usuario`, `Rol`, `Privilegio`, `Lote` y `Labor`, además de `TipoLabor`, están en el paquete `dominio`. El esquema Flyway `V1__create_initial_schema.sql` crea las tablas y relaciones correspondientes. Los datos semilla se agregarán en una etapa posterior.
 
 ## Versionado de la API
 
